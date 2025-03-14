@@ -35,10 +35,12 @@ jobs:
         working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/coreboot
         run: make crossgcc-i386 CPUS=$(nproc)
      
-      - name: Copy config into coreboot dir
+      - name: Copy config, intel me firmware, and intel firmware descriptor into coreboot dir
         working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/
         run: |
           cp macbook81.conf coreboot/.config
+          cp me.bin coreboot
+          cp descriptor.bin coreboot
 
       - name: Make coreboot rom image
         working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/coreboot
