@@ -20,9 +20,9 @@ jobs:
             sudo apt update
             sudo apt-get install -y bison build-essential curl flex git libncurses-dev libssl-dev zlib1g-dev pkgconf nasm imagemagick
             sudo apt install -y gcc-11 g++-11 gnat-11
-            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
-            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
-            sudo update-alternatives --install /usr/bin/gnat gnat /usr/bin/gnat-11 100
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 10
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 10
+            sudo update-alternatives --install /usr/bin/gnat gnat /usr/bin/gnat-11 10
 
       - name: Clone Coreboot Repository
         working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/
