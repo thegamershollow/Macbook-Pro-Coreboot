@@ -1,0 +1,57 @@
+name: Build Macbook Pro 8,1 Coreboot ROM Image
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Get disk space
+        run: df -h
+
+      - name: Install dependencies
+        run: |
+            sudo apt update
+            sudo apt-get install -y bison build-essential curl flex git libncurses-dev libssl-dev zlib1g-dev pkgconf
+            sudo apt install -y gcc-11 g++-11 gnat-11
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
+            sudo update-alternatives --install /usr/bin/gnat gnat /usr/bin/gnat-11 100
+
+      - name: Clone Coreboot Repository
+        working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/
+        run: |
+            git clone https://review.coreboot.org/coreboot.git
+            cd coreboot
+            git fetch https://review.coreboot.org/coreboot refs/changes/51/33151/24 && git reset --hard FETCH_HEAD
+
+      - name: Build crossgcc-i386
+        working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/coreboot
+        run: make crossgcc-i386 CPUS=$(nproc)
+     
+      - name: Copy config into coreboot dir
+        working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/
+        run: |
+          cp macbook81.conf coreboot/.config
+
+      - name: Make coreboot rom image
+        working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/coreboot
+        run: |
+          make olddefconfig
+          make
+
+      - name: Display file tree
+        working-directory: /home/runner/work/macbook-coreboot/macbook-coreboot/
+        run: tree -L 5
+
+      - name: Upload coreboot rom image
+        uses: actions/upload-artifact@v4
+        with:
+          name: "coreboot rom image"
+          path: /home/runner/work/macbook-coreboot/macbook-coreboot/coreboot/build/coreboot.rom
